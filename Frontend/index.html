@@ -1,13 +1,484 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listique - Digital Wishlist Platform</title>
-</head>
-<body>
-    <div>
-        Hello World
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Listique | Digital Wishlist Platform</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind config: extend colors for black & purple theme -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#a855f7" /* purple */,
+              darkbg: "#000",
+              darktext: "#e5e7eb",
+              accent: "#6b21a8" /* deeper purple */,
+            },
+          },
+        },
+      };
+    </script>
+    <!-- Font Awesome for stylish icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <!-- GSAP & ScrollTrigger CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Custom Styles for Loader, Custom Cursor, & Background Video -->
+    <style>
+      /* Loader overlay with robotic percentage animation */
+      #loader {
+        position: fixed;
+        inset: 0;
+        background-color: #000;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: monospace;
+        color: #a855f7;
+        font-size: 2rem;
+      }
+      /* Hide loader after completion */
+      #loader.hide {
+        display: none;
+      }
+      /* Background video covers hero exactly */
+      .bg-video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -1;
+      }
+      /* Refined Custom Cursor:
+       Smaller, lighter, with a clean border and subtle glow */
+      #custom-cursor {
+        position: fixed;
+        pointer-events: none;
+        width: 30px;
+        height: 30px;
+        background: transparent;
+        border: 1px solid #a855f7;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: sans-serif;
+        font-size: 0.6rem;
+        color: #a855f7;
+        transform: translate(-50%, -50%) scale(1);
+        z-index: 10000;
+        transition: transform 0.15s ease, opacity 0.15s ease;
+        box-shadow: 0 0 8px rgba(168, 85, 247, 0.5);
+      }
+      /* Remove default cursor */
+      body,
+      a,
+      button {
+        cursor: none;
+      }
+      /* Ensure hero section has no gap at the top */
+      #home {
+        margin-top: 0;
+      }
+    </style>
+  </head>
+  <body class="bg-darkbg text-darktext overflow-x-hidden relative">
+    <!-- Loader with robotic percentage text -->
+    <div id="loader">
+      <div id="loader-text">STARTING UP 0%</div>
     </div>
-</body>
+
+    <!-- Custom Cursor -->
+    <div id="custom-cursor">SCROLL</div>
+
+    <!-- Navbar (fixed, no gap over video) -->
+    <header
+      class="fixed top-0 left-0 w-full z-50 bg-black bg-opacity-90 shadow-md"
+    >
+      <div
+        class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between"
+      >
+        <div class="text-2xl font-bold text-primary">Listique</div>
+        <nav class="space-x-6">
+          <a href="#home" class="hover:text-primary transition">Home</a>
+          <a href="./pages/aboutUs/index.html" class="hover:text-primary transition">About</a>
+          <a href="./pages/contactUs/index.html" class="hover:text-primary transition">Contact Us</a>
+          <a href="./pages/Faq/index.html" class="hover:text-primary transition">FAQ</a>
+          <a href="./pages/TnC/index.html" class="hover:text-primary transition"
+            >Terms And Condition</a
+          >
+          <a href="./pages/login/index.html" class="hover:text-primary transition"
+            >Login</a
+          >
+          <a href="./pages/signup/index.html" class="hover:text-primary transition">Signup</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-20">
+      <!-- Hero Section with Background Video -->
+      <section
+        id="home"
+        class="relative min-h-screen flex items-center justify-center overflow-hidden"
+      >
+        <!-- Background Video -->
+        <video
+          class="bg-video"
+          autoplay
+          muted
+          loop
+          id="bg-video"
+        >
+          <source
+            src="./assets/6478240_Closeup_View_1920x1080.mp4"
+            type="video/mp4"
+          />
+        </video>
+        <!-- Hero Content -->
+        <div class="text-center px-4">
+          <h1 class="text-5xl md:text-7xl font-extrabold drop-shadow-lg">
+            Welcome to Listique
+          </h1>
+          <p class="text-xl md:text-2xl my-6">
+            The ultimate platform to create and share your dream wishlists with
+            style.
+          </p>
+          <a
+            href="#features"
+            class="px-6 py-3 bg-primary text-white rounded-full hover:bg-accent transition"
+          >
+            Discover More
+          </a>
+        </div>
+      </section>
+
+      <!-- About Section -->
+      <section id="about" class="py-20 bg-black">
+        <div class="max-w-5xl mx-auto px-4">
+          <h2 class="text-4xl font-bold text-center mb-8 text-primary">
+            About Listique
+          </h2>
+          <p
+            class="text-lg leading-relaxed text-center text-gray-300 max-w-3xl mx-auto"
+          >
+            Listique is a revolutionary digital wishlist platform merging sleek
+            design with cutting‑edge technology. Whether you're curating gift
+            ideas or tracking must‑have items, our intuitive interface turns
+            wishlists into art. Join thousands of modern users who transform
+            inspiration into reality.
+          </p>
+        </div>
+      </section>
+
+      <!-- Features Section -->
+      <section id="features" class="py-20 bg-black">
+        <div class="max-w-6xl mx-auto px-4">
+          <h2 class="text-4xl font-bold text-center mb-12 text-primary">
+            Features
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Feature 1 -->
+            <div>
+              <img
+                src="./assets/heart.png"
+                alt="Create Wishlist"
+                class="w-20 mx-auto mb-4"
+              />
+              <div class="p-4 text-center">
+                <h3 class="text-xl font-semibold mb-2">Create Wishlists</h3>
+                <p class="text-gray-300 text-sm">
+                  Organize your dream gifts, must-haves, and future buys in one
+                  sleek digital list.
+                </p>
+              </div>
+            </div>
+            <!-- Feature 2 -->
+            <div>
+              <img
+                src="./assets/send.png"
+                alt="Easy Sharing"
+                class="w-20 mx-auto mb-4"
+              />
+              <div class="p-4 text-center">
+                <h3 class="text-xl font-semibold mb-2">Easy Sharing</h3>
+                <p class="text-gray-300 text-sm">
+                  Instantly share your lists with friends and fam — no sign-up
+                  required for viewers.
+                </p>
+              </div>
+            </div>
+            <!-- Feature 3 -->
+            <div>
+              <img
+                src="./assets/folder.png"
+                alt="Privacy Control"
+                class="w-20 mx-auto mb-4"
+              />
+              <div class="p-4 text-center">
+                <h3 class="text-xl font-semibold mb-2">Privacy Control</h3>
+                <p class="text-gray-300 text-sm">
+                  Set your wishlist to public, private, or shared — you're in
+                  control of who sees what.
+                </p>
+              </div>
+            </div>
+            <!-- Feature 4 -->
+            <div>
+              <img
+                src="./assets/montage.png"
+                alt="Collaborative Editing"
+                class="w-20 mx-auto mb-4"
+              />
+              <div class="p-4 text-center">
+                <h3 class="text-xl font-semibold mb-2">
+                  Collaborative Editing
+                </h3>
+                <p class="text-gray-300 text-sm">
+                  Work together with friends and family to build the perfect
+                  wishlist.
+                </p>
+              </div>
+            </div>
+            <!-- Feature 5 -->
+            <div>
+              <img
+                src="./assets/leader.png"
+                alt="Smart Suggestions"
+                class="w-20 mx-auto mb-4"
+              />
+              <div class="p-4 text-center">
+                <h3 class="text-xl font-semibold mb-2">Smart Suggestions</h3>
+                <p class="text-gray-300 text-sm">
+                  Get AI-powered recommendations to enhance your wishlist
+                  experience.
+                </p>
+              </div>
+            </div>
+            <!-- Feature 6 -->
+            <div>
+              <img
+                src="./assets/device.png"
+                alt="Cross-Device Sync"
+                class="w-20 mx-auto mb-4"
+              />
+              <div class="p-4 text-center">
+                <h3 class="text-xl font-semibold mb-2">Cross-Device Sync</h3>
+                <p class="text-gray-300 text-sm">
+                  Access your wishlist seamlessly across all your devices.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Our Services Section -->
+      <section id="services" class="py-20 bg-black">
+        <div class="max-w-6xl mx-auto px-4">
+          <h2 class="text-4xl font-bold text-center mb-12 text-primary">
+            Our Services
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Service 1 -->
+            <div>
+              <img
+                src="./assets/giftbox.png"
+                alt="Gift Suggestion Engine"
+                class="w-20 mx-auto mb-4"
+              />
+              <div class="p-4 text-center">
+                <h3 class="text-xl font-semibold mb-2">
+                  Gift Suggestion Engine
+                </h3>
+                <p class="text-gray-300 text-sm">
+                  AI-powered recommendations to help you pick the perfect gifts
+                  for your loved ones.
+                </p>
+              </div>
+            </div>
+            <!-- Service 2 -->
+            <div>
+              <img
+                src="./assets/productivity.png"
+                alt="Collaborative Lists"
+                class="w-20 mx-auto mb-4"
+              />
+              <div class="p-4 text-center">
+                <h3 class="text-xl font-semibold mb-2">Collaborative Lists</h3>
+                <p class="text-gray-300 text-sm">
+                  Create shared wishlists with your squad, perfect for
+                  birthdays, weddings, or holidays.
+                </p>
+              </div>
+            </div>
+            <!-- Service 3 -->
+            <div>
+              <img
+                src="./assets/real-time.png"
+                alt="Real-Time Updates"
+                class="w-20 mx-auto mb-4"
+              />
+              <div class="p-4 text-center">
+                <h3 class="text-xl font-semibold mb-2">Real-Time Updates</h3>
+                <p class="text-gray-300 text-sm">
+                  Add, edit, or delete items on the fly — your list stays synced
+                  across all devices.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Portfolio Section -->
+      <section id="portfolio" class="py-20 bg-black">
+        <div class="max-w-6xl mx-auto px-4">
+          <h2 class="text-4xl font-bold text-center mb-12 text-primary">
+            Portfolio
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Portfolio item 1 -->
+            <div>
+              <img
+                src="https://cdn.dribbble.com/userupload/27699413/file/original-709136759dbc16234bb5d4b4c3ef6879.jpg?format=webp&resize=640x480&vertical=center"
+                alt="Modern Minimalist Design"
+                class="w-full"
+              />
+              <div class="p-4">
+                <h3 class="text-xl font-semibold mb-2">
+                  Modern Minimalist Design
+                </h3>
+                <p class="text-gray-300 text-sm">
+                  A sleek, uncluttered design that emphasizes simplicity and
+                  elegance—perfect for high‑end marketplaces.
+                </p>
+              </div>
+            </div>
+            <!-- Portfolio item 2 -->
+            <div>
+              <img
+                src="https://cdn.dribbble.com/userupload/37523709/file/original-327dd01650b01b955705d740e4885abb.png?format=webp&resize=640x480&vertical=center"
+                alt="Dynamic Interactive UI"
+                class="w-full"
+              />
+              <div class="p-4">
+                <h3 class="text-xl font-semibold mb-2">
+                  Dynamic Interactive UI
+                </h3>
+                <p class="text-gray-300 text-sm">
+                  An interface that combines vibrant color schemes with engaging
+                  animations to create a truly immersive experience.
+                </p>
+              </div>
+            </div>
+            <!-- Portfolio item 3 -->
+            <div>
+              <img
+                src="https://cdn.dribbble.com/userupload/42883404/file/original-184174b1a628c82767a1a3b1a0222409.png?format=webp&resize=640x480&vertical=center"
+                alt="Innovative Collaboration Platform"
+                class="w-full"
+              />
+              <div class="p-4">
+                <h3 class="text-xl font-semibold mb-2">
+                  Innovative Collaboration Platform
+                </h3>
+                <p class="text-gray-300 text-sm">
+                  A design built for teamwork, featuring real‑time sharing and
+                  interactive elements that drive productivity.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Testimonials Section -->
+      <section id="testimonials" class="py-20 bg-black">
+        <div class="max-w-4xl mx-auto px-4">
+          <h2 class="text-4xl font-bold text-center mb-12 text-primary">
+            Testimonials
+          </h2>
+          <div class="space-y-8">
+            <div
+              class="p-8 bg-gray-900 rounded-lg shadow-lg hover:shadow-2xl transition"
+            >
+              <p class="italic text-gray-300 mb-4">
+                "Listique redefined how I manage my gift ideas. The sleek design
+                and smooth animations are truly inspiring!"
+              </p>
+              <p class="font-semibold text-primary">— Alex, Designer</p>
+            </div>
+            <div
+              class="p-8 bg-gray-900 rounded-lg shadow-lg hover:shadow-2xl transition"
+            >
+              <p class="italic text-gray-300 mb-4">
+                "An absolute game‑changer. The custom wishlists and
+                collaboration features make Listique my go‑to platform."
+              </p>
+              <p class="font-semibold text-primary">— Jordan, Photographer</p>
+            </div>
+            <div
+              class="p-8 bg-gray-900 rounded-lg shadow-lg hover:shadow-2xl transition"
+            >
+              <p class="italic text-gray-300 mb-4">
+                "Seamless, modern, and innovative—Listique has completely
+                transformed the way I organize my desires."
+              </p>
+              <p class="font-semibold text-primary">— Taylor, Entrepreneur</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact Section -->
+      <section id="contact" class="py-20 bg-black">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+          <h2 class="text-4xl font-bold mb-12 text-primary">Get In Touch</h2>
+          <p class="mb-8 text-lg text-gray-300">
+            Have questions or want to collaborate? Reach out to us via email or
+            connect on social media.
+          </p>
+          <div
+            class="flex flex-col md:flex-row justify-center items-center gap-6"
+          >
+            <a
+              href="mailto:hello@listique.com"
+              class="px-8 py-3 bg-primary text-white rounded-full hover:bg-accent transition"
+            >
+              <i class="fas fa-envelope mr-2"></i> Email Us
+            </a>
+            <a
+              href="https://www.linkedin.com"
+              target="_blank"
+              class="px-8 py-3 bg-primary text-white rounded-full hover:bg-accent transition"
+            >
+              <i class="fab fa-linkedin mr-2"></i> LinkedIn
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black py-6">
+      <div class="max-w-7xl mx-auto px-4 text-center text-gray-400">
+        <p>&copy; 2025 Listique. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <!-- Custom Script -->
+    <script src="script.js"></script>
+  </body>
 </html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Listuque</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    </style>
+</head>
+<body class="bg-gray-800 text-gray-200 font-sans" style="font-family: 'Inter', sans-serif;">
+    <div class="flex flex-col md:flex-row h-screen">
+        <!-- Left Section -->
+        <div class="md:w-1/2 flex flex-col justify-center items-center bg-gray-900 px-8">
+            <h1 class="text-5xl md:text-6xl font-extrabold mb-6 text-center text-gray-100">Welcome to Listuque</h1>
+            <p class="text-lg text-gray-400 mb-8 text-center">Your trusted partner for modern solutions.</p>
+            <div class="flex space-x-6 mt-4">
+                <div class="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition">
+                    <span class="text-gray-300">Icon 1</span>
+                </div>
+                <div class="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition">
+                    <span class="text-gray-300">Icon 2</span>
+                </div>
+                <div class="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition">
+                    <span class="text-gray-300">Icon 3</span>
+                </div>
+            </div>
+            <div class="mt-8 text-sm text-gray-400 text-center">
+                <a href="#" class="hover:underline">Privacy Policy</a> · 
+                <a href="#" class="hover:underline">Terms of Service</a> · 
+                <a href="#" class="hover:underline">Contact Us</a>
+            </div>
+        </div>
+        <!-- Right Section -->
+        <div class="md:w-1/2 bg-gray-100 text-gray-900 p-10 flex flex-col justify-center shadow-lg">
+            <h2 class="text-4xl font-bold mb-8 text-center text-gray-800">Get in Touch</h2>
+            <form class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="first-name" class="block text-sm font-medium text-gray-700">First Name</label>
+                        <input type="text" id="first-name" placeholder="Enter your first name" class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500">
+                    </div>
+                    <div>
+                        <label for="last-name" class="block text-sm font-medium text-gray-700">Last Name</label>
+                        <input type="text" id="last-name" placeholder="Enter your last name" class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500">
+                    </div>
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email" class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500">
+                </div>
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                    <input type="tel" id="phone" placeholder="Enter your phone number" class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500">
+                </div>
+                <div>
+                    <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
+                    <textarea id="message" placeholder="Enter your message" class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"></textarea>
+                </div>
+                <button type="submit" class="w-full py-3 bg-gray-900 text-white rounded-md hover:bg-gray-700 transition">Send Message</button>
+            </form>
+            <div class="mt-8 text-sm text-center">
+                <p>Email us: <a href="mailto:support@listquue.com" class="text-gray-900 hover:underline">support@listuque.com</a></p>
+                <div class="flex justify-center space-x-6 mt-4">
+                    <a href="#" class="hover:underline">Instagram</a>
+                    <a href="#" class="hover:underline">Facebook</a>
+                    <a href="#" class="hover:underline">Twitter</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
