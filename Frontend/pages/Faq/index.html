@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQs - Listique</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    </style>
+</head>
+<body class="bg-black text-gray-100 font-sans" style="font-family: 'Inter', sans-serif;">
+    <!-- Header -->
+    <header class="bg-black text-gray-100 py-4 px-8 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-extrabold">Listique</h1>
+            <nav class="hidden md:flex space-x-6">
+                <a href="#" class="hover:text-blue-400 transition duration-300">Home</a>
+                <a href="#" class="hover:text-blue-400 transition duration-300">Features</a>
+                <a href="#" class="hover:text-blue-400 transition duration-300">Pricing</a>
+                <a href="#" class="hover:text-blue-400 transition duration-300">Contact</a>
+            </nav>
+            <button class="md:hidden text-gray-100 focus:outline-none" id="menu-toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </div>
+        <div class="hidden md:hidden flex-col space-y-4 mt-4 px-8" id="mobile-menu">
+            <a href="#" class="hover:text-blue-400 transition duration-300">Home</a>
+            <a href="#" class="hover:text-blue-400 transition duration-300">Features</a>
+            <a href="#" class="hover:text-blue-400 transition duration-300">Pricing</a>
+            <a href="#" class="hover:text-blue-400 transition duration-300">Contact</a>
+        </div>
+    </header>
+
+    <!-- FAQ Section -->
+    <main class="container mx-auto px-6 py-16 lg:px-20">
+        <div class="text-center mb-16">
+            <h2 class="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 mb-4">Frequently Asked Questions</h2>
+            <p class="text-lg text-gray-300">Find answers to the most common questions about Listique.</p>
+            <p class="text-gray-400 mt-2">Still need help? <a href="#" class="text-blue-400 hover:underline">Contact us!</a></p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <!-- FAQ Column 1 -->
+            <div class="space-y-6">
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg hover:scale-105 transform transition duration-300">
+                    <h4 class="text-xl font-semibold text-blue-400">How do I create a wishlist?</h4>
+                    <p class="text-gray-300 mt-2">Sign up and click on the "Create Wishlist" button on your dashboard to get started.</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg hover:scale-105 transform transition duration-300">
+                    <h4 class="text-xl font-semibold text-blue-400">Can I share my wishlist with others?</h4>
+                    <p class="text-gray-300 mt-2">Yes, share your wishlist via a unique link or directly through social media.</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg hover:scale-105 transform transition duration-300">
+                    <h4 class="text-xl font-semibold text-blue-400">Is Listique free to use?</h4>
+                    <p class="text-gray-300 mt-2">Yes, Listique offers a free plan with basic features. Premium plans are available for advanced features.</p>
+                </div>
+            </div>
+
+            <!-- FAQ Column 2 -->
+            <div class="space-y-6 text-sm">
+                <div class="bg-gray-900 p-6 rounded-lg shadow-lg hover:scale-105 transform transition duration-300">
+                    <h4 class="text-lg font-semibold text-blue-400">Can I add items from any website?</h4>
+                    <p class="text-gray-300 mt-2">Yes, add items from any website using our browser extension or manual entry.</p>
+                </div>
+                <div class="bg-gray-900 p-6 rounded-lg shadow-lg hover:scale-105 transform transition duration-300">
+                    <h4 class="text-lg font-semibold text-blue-400">How do I manage my wishlist privacy?</h4>
+                    <p class="text-gray-300 mt-2">Set your wishlist to public, private, or shared with specific people in the settings.</p>
+                </div>
+                <div class="bg-gray-900 p-6 rounded-lg shadow-lg hover:scale-105 transform transition duration-300">
+                    <h4 class="text-lg font-semibold text-blue-400">Can I track purchased items?</h4>
+                    <p class="text-gray-300 mt-2">Yes, mark items as purchased to avoid duplicate gifts.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black text-gray-400 py-8 text-center">
+        <p class="text-gray-300">&copy; 2023 Listique. All rights reserved.</p>
+        <div class="flex justify-center space-x-6 mt-4">
+            <a href="#" class="hover:text-blue-400 transition duration-300">Privacy Policy</a>
+            <a href="#" class="hover:text-blue-400 transition duration-300">Terms of Service</a>
+        </div>
+    </footer>
+
+    <script>
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>
