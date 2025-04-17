@@ -1,74 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - Listuque</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Us</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    input, textarea {
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    input:focus, textarea:focus {
+      border-color: #ec4899;
+      outline: none;
+    }
+  </style>
 </head>
-<body class="bg-gray-800 text-gray-200 font-sans" style="font-family: 'Inter', sans-serif;">
-    <div class="flex flex-col md:flex-row h-screen">
-        <!-- Left Section -->
-        <div class="md:w-1/2 flex flex-col justify-center items-center bg-gray-900 px-8">
-            <h1 class="text-5xl md:text-6xl font-extrabold mb-6 text-center text-gray-100">Welcome to Listuque</h1>
-            <p class="text-lg text-gray-400 mb-8 text-center">Your trusted partner for modern solutions.</p>
-            <div class="flex space-x-6 mt-4">
-                <div class="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition">
-                    <span class="text-gray-300">Icon 1</span>
-                </div>
-                <div class="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition">
-                    <span class="text-gray-300">Icon 2</span>
-                </div>
-                <div class="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition">
-                    <span class="text-gray-300">Icon 3</span>
-                </div>
+<body class="bg-black text-white h-screen overflow-hidden">
+
+  <!-- Full Page Container -->
+  <div class="flex flex-col h-full">
+
+    <!-- Header -->
+    <header class="text-center py-4">
+      <h1 class="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 tracking-wide">
+        CONTACT US
+      </h1>
+    </header>
+
+    <!-- Main Content Area: Form + Map -->
+    <main class="flex flex-1 px-6 md:px-16 gap-6">
+      <!-- Form -->
+      <div class="w-1/2 flex flex-col justify-center">
+        <div class="max-w-md w-full">
+          <h2 class="text-2xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-red-500 uppercase">
+            Send a Message
+          </h2>
+          <form class="space-y-4">
+            <div>
+              <label for="name" class="block mb-1 text-gray-300">Full Name</label>
+              <input type="text" id="name" class="w-full p-2 rounded-xl text-white placeholder-gray-400" placeholder="Your name">
             </div>
-            <div class="mt-8 text-sm text-gray-400 text-center">
-                <a href="#" class="hover:underline">Privacy Policy</a> · 
-                <a href="#" class="hover:underline">Terms of Service</a> · 
-                <a href="#" class="hover:underline">Contact Us</a>
+            <div>
+              <label for="email" class="block mb-1 text-gray-300">Email</label>
+              <input type="email" id="email" class="w-full p-2 rounded-xl text-white placeholder-gray-400" placeholder="Your email">
             </div>
+            <div>
+              <label for="subject" class="block mb-1 text-gray-300">Subject</label>
+              <input type="text" id="subject" class="w-full p-2 rounded-xl text-white placeholder-gray-400" placeholder="Subject">
+            </div>
+            <div>
+              <label for="message" class="block mb-1 text-gray-300">Message</label>
+              <textarea id="message" rows="4" class="w-full p-2 rounded-xl text-white placeholder-gray-400" placeholder="Your message"></textarea>
+            </div>
+            <button class="bg-gradient-to-r from-pink-500 to-red-500 text-white font-semibold px-6 py-2 rounded-full mt-2 hover:scale-105 transition">
+              Send
+            </button>
+          </form>
         </div>
-        <!-- Right Section -->
-        <div class="md:w-1/2 bg-gray-100 text-gray-900 p-10 flex flex-col justify-center shadow-lg">
-            <h2 class="text-4xl font-bold mb-8 text-center text-gray-800">Get in Touch</h2>
-            <form class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="first-name" class="block text-sm font-medium text-gray-700">First Name</label>
-                        <input type="text" id="first-name" placeholder="Enter your first name" class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500">
-                    </div>
-                    <div>
-                        <label for="last-name" class="block text-sm font-medium text-gray-700">Last Name</label>
-                        <input type="text" id="last-name" placeholder="Enter your last name" class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500">
-                    </div>
-                </div>
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" id="email" placeholder="Enter your email" class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500">
-                </div>
-                <div>
-                    <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                    <input type="tel" id="phone" placeholder="Enter your phone number" class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500">
-                </div>
-                <div>
-                    <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
-                    <textarea id="message" placeholder="Enter your message" class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"></textarea>
-                </div>
-                <button type="submit" class="w-full py-3 bg-gray-900 text-white rounded-md hover:bg-gray-700 transition">Send Message</button>
-            </form>
-            <div class="mt-8 text-sm text-center">
-                <p>Email us: <a href="mailto:support@listquue.com" class="text-gray-900 hover:underline">support@listuque.com</a></p>
-                <div class="flex justify-center space-x-6 mt-4">
-                    <a href="#" class="hover:underline">Instagram</a>
-                    <a href="#" class="hover:underline">Facebook</a>
-                    <a href="#" class="hover:underline">Twitter</a>
-                </div>
-            </div>
-        </div>
-    </div>
+      </div>
+
+      <!-- Map -->
+      <div class="w-1/2 rounded-2xl border border-pink-500 overflow-hidden">
+        <iframe 
+          class="w-full h-full"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d448181.0771257718!2d76.76357412693918!3d28.64428735479765!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d0325cbcb6f81%3A0x55aab8f8cb8f9f14!2sNew%20Delhi%2C%20Delhi!5e0!3m2!1sen!2sin!4v1617013368888!5m2!1sen!2sin"
+          allowfullscreen=""
+          loading="lazy">
+        </iframe>
+      </div>
+    </main>
+
+    <!-- Footer: Contact Info -->
+    <footer class="text-center py-3 text-sm text-gray-300 space-y-2">
+      <div><i class="fas fa-phone-alt text-pink-400 mr-2"></i> +91 9876543210</div>
+      <div><i class="fas fa-envelope text-pink-400 mr-2"></i> support@listique.com</div>
+      <div><i class="fas fa-map-marker-alt text-pink-400 mr-2"></i> New Delhi, India</div>
+      <div class="flex justify-center gap-6 mt-1">
+        <a href="https://instagram.com" class="text-pink-400 hover:scale-110">Instagram<i class="fab fa-instagram"></i></a>
+        <a href="https://linkedin.com" class="text-blue-400 hover:scale-110">Linkedin<i class="fab fa-linkedin"></i></a>
+        <a href="https://github.com" class="text-gray-400 hover:scale-110">Github<i class="fab fa-github"></i></a>
+      </div>
+    </footer>
+
+  </div>
+
 </body>
 </html>
