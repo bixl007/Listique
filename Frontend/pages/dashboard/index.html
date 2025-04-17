@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Listique Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <style>
+    :root { font-family: 'Inter', sans-serif; }
+    @supports (font-variation-settings: normal) {
+      :root { font-family: 'Inter var', sans-serif; }
+    }
+  </style>
+</head>
+<body class="h-full overflow-x-hidden antialiased bg-black text-slate-300">
+  <div x-data="{ open: false }" class="h-full flex">
+    <button @click="open = !open" class="md:hidden fixed top-4 left-4 z-50 p-2 bg-white/10 rounded-lg focus:outline-none">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+
+    <!-- Sidebar -->
+    <aside :class="open ? 'translate-x-0' : '-translate-x-full'" 
+           class="fixed inset-y-0 left-0 w-64 bg-white/10 border-r border-white/20 p-6 space-y-6 transform transition-transform duration-300 md:relative md:translate-x-0 md:flex-shrink-0 h-full overflow-y-auto">
+      <h1 class="text-4xl font-extrabold bg-gradient-to-br from-white via-white/50 to-transparent bg-clip-text text-transparent">
+        Listique<span class="text-indigo-400">.</span>
+      </h1>
+      <p class="text-lg text-slate-400">Welcome back,</p>
+      <!-- Profile -->
+      <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-2xl">
+        <div class="w-12 h-12 rounded-full bg-black flex items-center justify-center">
+          <span id="userAvatar" class="text-2xl font-bold text-purple-500"></span>
+        </div>
+        <div>
+          <p id="userName" class="text-lg font-semibold"></p>
+          <p class="text-sm text-slate-400">Digital Creator</p>
+        </div>
+      </div>
+      <!-- Nav -->
+      <nav class="space-y-2">
+        <a href="#" class="flex items-center space-x-3 p-3 rounded-2xl hover:bg-white/10 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13.5h18M3 6h18M3 20h18" />
+          </svg>
+          <span class="text-lg font-semibold">Dashboard</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 p-3 rounded-2xl hover:bg-white/10 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-slate-300 hover:text-indigo-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M3 11h18M5 11v10a2 2 0 002 2h10a2 2 0 002-2V11" />
+          </svg>
+          <span class="text-lg font-semibold">My Wishlists</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 p-3 rounded-2xl hover:bg-white/10 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-slate-300 hover:text-indigo-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 8a3 3 0 11-6 0 3 3 0 016 0zM4 19a8 8 0 0116 0" />
+          </svg>
+          <span class="text-lg font-semibold">Shared Lists</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 p-3 rounded-2xl hover:bg-white/10 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-slate-300 hover:text-indigo-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.25 3.75a.75.75 0 011.5 0v1.5a.75.75 0 01-1.5 0V3.75zM4.5 11.25a.75.75 0 010-1.5h1.5a.75.75 0 010 1.5H4.5zm12 0a.75.75 0 010-1.5h1.5a.75.75 0 010 1.5h-1.5zM11.25 18.75a.75.75 0 011.5 0v1.5a.75.75 0 01-1.5 0v-1.5z" />
+          </svg>
+          <span class="text-lg font-semibold">Settings</span>
+        </a>
+      </nav>
+      <p class="text-xs text-center text-gray-500">v1.0.0 | &copy; 2053 Listique</p>
+    </aside>
+
+    <!-- Mobile overlay -->
+    <div x-show="open" @click="open = false" class="fixed inset-0 bg-black/50 md:hidden"></div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col h-full overflow-y-auto">
+      <div class="p-6">
+        <!-- Add Wishlist Form -->
+        <div class="bg-white/10 p-6 rounded-2xl mb-10">
+          <h2 class="text-2xl font-semibold mb-4">Create Wishlist</h2>
+          <form id="wishlistForm" class="space-y-4">
+            <div>
+              <label for="wishlistTitle" class="block text-sm font-medium">Title</label>
+              <input type="text" id="wishlistTitle" class="w-full p-2 rounded-lg bg-white/5 text-white" required />
+            </div>
+            <div>
+              <label for="wishlistDescription" class="block text-sm font-medium">Description</label>
+              <textarea id="wishlistDescription" class="w-full p-2 rounded-lg bg-white/5 text-white" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="px-4 py-2 bg-indigo-600 rounded-lg text-white">Create</button>
+          </form>
+        </div>
+
+        <!-- User Wishlists -->
+        <div>
+          <h2 class="text-2xl font-semibold mb-4">My Wishlists</h2>
+          <div id="wishlistsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Wishlists will be dynamically loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alpine.js for sidebar toggle -->
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script>
+    async function fetchUserDetails() {
+      try {
+        const response = await fetch('../../../Backend/user/get.php'); // Ensure the endpoint is correct
+        if (!response.ok) {
+          if (response.status === 401) {
+            alert('You are not logged in. Redirecting to login page...');
+            window.location.href = '../login/index.html';
+          } else {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+          }
+        }
+        const user = await response.json();
+
+        // Set user name and avatar
+        document.getElementById('userName').textContent = user.name;
+        document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
+
+        // Store user ID for wishlist operations
+        window.loggedInUserId = user.id;
+
+        // Load wishlists after fetching user details
+        loadWishlists();
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+        alert('Unable to load user details. Please log in again.');
+      }
+    }
+
+    async function loadWishlists() {
+      try {
+        const response = await fetch(`../../../Backend/wishlist/get.php?user_id=${window.loggedInUserId}`);
+        if (!response.ok) throw new Error('Failed to fetch wishlists');
+        const wishlists = await response.json();
+
+        const container = document.getElementById('wishlistsContainer');
+        container.innerHTML = '';
+        wishlists.forEach((wishlist) => {
+          const div = document.createElement('div');
+          div.className = 'bg-white/10 p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300';
+          div.innerHTML = `
+            <h3 class="text-lg font-semibold text-white">${wishlist.title}</h3>
+            <p class="text-sm text-slate-400 mt-2">${wishlist.description}</p>
+            <div class="mt-4 flex justify-between items-center">
+              <button onclick="shareWishlist(${wishlist.id})" class="px-3 py-1 bg-indigo-600 rounded-lg text-sm text-white">Share</button>
+              <span class="text-xs text-slate-500">Created on ${new Date(wishlist.created_at).toLocaleDateString()}</span>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      } catch (error) {
+        console.error(error);
+        alert('Unable to load wishlists.');
+      }
+    }
+
+    async function shareWishlist(id) {
+      try {
+        const response = await fetch('../../../Backend/wishlist/share.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ id }) // Send ID as POST parameter
+        });
+
+        if (!response.ok) throw new Error('Failed to share wishlist');
+
+        const result = await response.json();
+        if (result.success) {
+            const shareableLink = result.link;
+            alert(`Wishlist shared successfully! Shareable link: ${shareableLink}`);
+            window.open(shareableLink, '_blank'); // Open the link in a new tab
+        }
+      } catch (error) {
+        console.error('Error sharing wishlist:', error);
+        alert('Unable to share wishlist.');
+      }
+    }
+
+    document.getElementById('wishlistForm').addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevent default form submission
+
+        const title = document.getElementById('wishlistTitle').value;
+        const description = document.getElementById('wishlistDescription').value;
+
+        try {
+            const response = await fetch('../../../Backend/wishlist/create.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: window.loggedInUserId, // Ensure user_id is included
+                    title,
+                    description
+                })
+            });
+
+            if (!response.ok) throw new Error('Failed to create wishlist');
+
+            alert('Wishlist created successfully!');
+            document.getElementById('wishlistForm').reset(); // Clear the form
+            loadWishlists(); // Reload wishlists
+        } catch (error) {
+            console.error('Error creating wishlist:', error);
+            alert('Unable to create wishlist.');
+        }
+    });
+
+    // Fetch user details on page load
+    fetchUserDetails();
+  </script>
+</body>
+</html>
