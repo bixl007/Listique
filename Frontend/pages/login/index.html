@@ -8,28 +8,27 @@
     </head>
     <body class="flex h-screen bg-gray-200">
         <div class="flex w-full h-screen">
-            <!-- Left Section -->
             <div class="w-full md:w-1/2 bg-white flex flex-col p-16 relative">
                 <div class="text-3xl font-bold absolute top-4 left-4 md:top-6 md:left-6">Listique</div>
                 <div class="mt-16 flex-grow flex flex-col justify-center">
                     <h2 class="text-2xl mb-5">Login</h2>
-                    <div class="flex flex-col mb-4">
-                        <label class="text-sm font-semibold mb-1 text-gray-800">Email</label>
-                        <input type="email" class="w-full p-3 border border-gray-300 rounded-md text-lg" placeholder="Enter your email">
-                    </div>
-                    <div class="flex flex-col mb-4 relative">
-                        <label class="text-sm font-semibold mb-1 text-gray-800">Password</label>
-                        <input type="password" class="w-full p-3 border border-gray-300 rounded-md text-lg" id="password" placeholder="Enter your password">
-                        <span class="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500 text-sm" onclick="togglePassword()">👁</span>
-                    </div>
-                    <button class="w-full p-3 bg-black text-white border-none rounded-md text-lg mt-2">Login</button>
+                    <form action="../../../Backend/login.php" method="POST">
+                        <div class="flex flex-col mb-4">
+                            <label class="text-sm font-semibold mb-1 text-gray-800">Email</label>
+                            <input type="email" name="email" class="w-full p-3 border border-gray-300 rounded-md text-lg" placeholder="Enter your email" required>
+                        </div>
+                        <div class="flex flex-col mb-4 relative">
+                            <label class="text-sm font-semibold mb-1 text-gray-800">Password</label>
+                            <input type="password" name="password" class="w-full p-3 border border-gray-300 rounded-md text-lg" id="password" placeholder="Enter your password" required>
+                            <span class="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500 text-sm" onclick="togglePassword()">👁</span>
+                        </div>
+                        <button class="w-full p-3 bg-black text-white border-none rounded-md text-lg mt-2">Login</button>
+                    </form>
                     <p class="text-sm text-gray-600 mt -4">New to Listique? <a href="../signup/index.html" class="text-blue-500">Sign up</a></p>
                     <a href="#" class="block text-center mt-3 text-black text-sm">Forgot password?</a>
                 </div>
                 <p class="mt-6 text-xs text-gray-600 text-center">&copy; 2025 Listique. All Rights Reserved.</p>
             </div>
-            
-            <!-- Right Section (Hidden on Small Screens) -->
             <div class="hidden md:flex w-1/2 bg-black justify-center items-center text-white relative">
                 <div class="absolute w-full h-full bg-[radial-gradient(circle,_rgba(255,69,0,0.4)_10%,_black_70%)]"></div>
                 <div class="relative bg-white bg-opacity-10 p-5 rounded-lg max-w-sm text-left backdrop-blur-md">
@@ -39,7 +38,6 @@
                 </div>
             </div>
         </div>
-
         <script>
             function togglePassword() {
                 const passwordField = document.getElementById("password");
