@@ -1,6 +1,16 @@
 <?php
 header('Content-Type: application/json');
+header('Access-Control-Allow-Credentials: true'); // Allow credentials for cross-origin requests
+header('Access-Control-Allow-Origin: http://localhost'); // Adjust based on your frontend's origin
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS'); // Allow necessary HTTP methods
+header('Access-Control-Allow-Headers: Content-Type, Authorization'); // Allow necessary headers
 session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    // Handle preflight requests
+    http_response_code(204);
+    exit;
+}
 
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);

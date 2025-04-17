@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="profile-title">Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <style>
+    :root { font-family: 'Inter', sans-serif; }
+    @supports (font-variation-settings: normal) {
+      :root { font-family: 'Inter var', sans-serif; }
+    }
+    ::-webkit-scrollbar { display: none; }
+    * { -ms-overflow-style: none; scrollbar-width: none; }
+    .avatar-bg {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+    .gradient-title {
+      background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body class="h-full overflow-x-hidden antialiased bg-black text-slate-300">
+  <div x-data="{ open: false }" class="h-full flex">
+    <!-- Sidebar -->
+    <aside :class="open ? 'translate-x-0' : 'translate-x-full'" 
+           class="fixed inset-y-0 right-0 w-64 bg-black border-none p-6 space-y-6 transform transition-transform duration-300 h-full overflow-y-auto">
+      <div class="flex justify-between items-center">
+        <!-- Profile -->
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 rounded-full avatar-bg flex items-center justify-center">
+            <span id="userAvatar" class="text-2xl font-bold text-purple-500"></span>
+          </div>
+          <div>
+            <p id="userName" class="text-lg font-semibold"></p>
+            <p class="text-sm text-slate-400">Digital Creator</p>
+          </div>
+        </div>
+        <!-- Close Button -->
+        <button x-show="open" @click="open = false" class="text-white cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <!-- Nav -->
+      <nav class="space-y-2">
+        <a href="../dashboard/index.html" class="flex items-center space-x-3 p-3 rounded-2xl hover:bg-white/10 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13.5h18M3 6h18M3 20h18" />
+          </svg>
+          <span class="text-lg font-semibold">Dashboard</span>
+        </a>
+        <a href="../../index.html" class="flex items-center space-x-3 p-3 rounded-2xl hover:bg-white/10 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+          <span class="text-lg font-semibold">Home</span>
+        </a>
+        <a href="../login/index.html" onclick="logout()" class="flex items-center space-x-3 p-3 rounded-2xl hover:bg-white/10 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-6 0v-1m6-10V5a3 3 0 00-6 0v1" />
+          </svg>
+          <span class="text-lg font-semibold text-red-500">Logout</span>
+        </a>
+      </nav>
+      <p class="text-xs text-center text-gray-500">v1.0.0 | &copy; 2025 Listique</p>
+    </aside>
+
+    <!-- Avatar -->
+    <div class="fixed top-4 right-4 z-50">
+      <div x-show="!open" @click="open = true" class="w-12 h-12 rounded-full avatar-bg flex items-center justify-center cursor-pointer">
+        <span id="userAvatarToggle" class="text-2xl font-bold text-purple-500"></span>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col h-full overflow-y-auto items-center justify-center">
+      <div class="w-full max-w-lg mx-auto mt-16 p-8 bg-gradient-to-br from-slate-900/80 via-slate-800/80 to-indigo-900/80 rounded-2xl shadow-2xl border border-slate-800">
+        <h2 id="profile-title-heading" class="text-3xl font-extrabold gradient-title mb-8 text-center flex justify-center items-center"></h2>
+        <div class="flex flex-col items-center">
+          <div class="w-28 h-28 rounded-full avatar-bg flex items-center justify-center mb-6">
+            <span id="profile-avatar" class="text-4xl font-bold text-purple-500"></span>
+          </div>
+          <h3 id="user-name" class="text-2xl font-bold mb-2 text-indigo-200"></h3>
+          <p id="user-description" class="text-base text-slate-400 mb-4">Digital Creator</p>
+          <div class="w-full bg-slate-800/60 rounded-xl p-6 mt-4">
+            <div class="mb-3 flex items-center">
+              <span class="w-28 text-slate-400 font-semibold">Email:</span>
+              <span id="user-email" class="text-slate-100"></span>
+            </div>
+            <div class="mb-1 flex items-center">
+              <span class="w-28 text-slate-400 font-semibold">Date Joined:</span>
+              <span id="user-date-joined" class="text-slate-100"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Alpine.js for sidebar toggle -->
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script>
+    // Fetch user details from backend and populate profile
+    async function loadProfile() {
+      try {
+        const response = await fetch('../../../Backend/user/get_user.php', {
+          credentials: 'include',
+          cache: 'no-cache'
+        });
+        if (!response.ok) {
+          window.location.href = '../login/index.html';
+          return;
+        }
+        const user = await response.json();
+        // Set avatar, name, description, email, and date joined
+        document.title = `${user.name}'s Profile`;
+        // Centered name's profile
+        document.getElementById("profile-title-heading").innerHTML = `<span class="block text-center">${user.name}'s Profile</span>`;
+        document.getElementById("profile-avatar").innerText = user.name.charAt(0).toUpperCase();
+        document.getElementById("user-name").innerText = user.name;
+        document.getElementById("user-description").innerText = "Digital Creator";
+        document.getElementById("user-email").innerText = user.email;
+        // Prefer join_date, fallback to created_at
+        let joinDate = user.join_date || user.created_at;
+        if (joinDate) {
+          document.getElementById("user-date-joined").innerText = new Date(joinDate).toLocaleDateString();
+        } else {
+          document.getElementById("user-date-joined").innerText = "N/A";
+        }
+        // Sidebar avatar
+        document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
+        document.getElementById('userAvatarToggle').textContent = user.name.charAt(0).toUpperCase();
+        document.getElementById('userName').textContent = user.name;
+      } catch (e) {
+        window.location.href = '../login/index.html';
+      }
+    }
+    // Logout function
+    async function logout() {
+      try {
+        await fetch('../../../Backend/logout.php', {
+          method: 'POST',
+          credentials: 'include',
+        });
+        window.location.href = '../login/index.html';
+      } catch (e) {
+        window.location.href = '../login/index.html';
+      }
+    }
+    window.onload = loadProfile;
+  </script>
+</body>
+</html>

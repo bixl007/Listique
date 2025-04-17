@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin - Contact Messages</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white min-h-screen">
+  <div class="max-w-3xl mx-auto py-10 px-4">
+    <h1 class="text-3xl font-bold mb-8 text-center text-purple-400">Contact Messages</h1>
+    <div id="contacts-container" class="space-y-6">
+      <!-- Contact blocks will be inserted here -->
+    </div>
+  </div>
+  <script>
+    async function loadContacts() {
+      try {
+        const res = await fetch('../../../Backend/admin/get_contacts.php');
+        if (!res.ok) throw new Error('Failed to fetch contacts');
+        const contacts = await res.json();
+        const container = document.getElementById('contacts-container');
+        if (!Array.isArray(contacts) || contacts.length === 0) {
+          container.innerHTML = '<div class="text-center text-gray-400">No contact messages found.</div>';
+          return;
+        }
+        container.innerHTML = '';
+        contacts.forEach(c => {
+          const block = document.createElement('div');
+          block.className = 'bg-slate-800/80 rounded-xl p-6 border border-slate-700 shadow';
+          block.innerHTML = `
+            <div class="flex justify-between items-center mb-2">
+              <span class="font-semibold text-lg text-pink-400">${c.name}</span>
+              <span class="text-xs text-gray-400">${new Date(c.created_at).toLocaleString()}</span>
+            </div>
+            <div class="mb-1"><span class="font-semibold text-gray-300">Email:</span> <span class="text-gray-200">${c.email}</span></div>
+            <div class="mb-1"><span class="font-semibold text-gray-300">Subject:</span> <span class="text-gray-200">${c.subject}</span></div>
+            <div class="mb-1"><span class="font-semibold text-gray-300">Message:</span></div>
+            <div class="bg-slate-900/70 rounded p-3 text-gray-100 whitespace-pre-line">${c.message}</div>
+          `;
+          container.appendChild(block);
+        });
+      } catch (e) {
+        document.getElementById('contacts-container').innerHTML =
+          '<div class="text-center text-red-400">Error loading contacts.</div>';
+      }
+    }
+    window.onload = loadContacts;
+  </script>
+</body>
+</html>

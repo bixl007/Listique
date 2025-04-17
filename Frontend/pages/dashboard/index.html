@@ -12,82 +12,590 @@
     @supports (font-variation-settings: normal) {
       :root { font-family: 'Inter var', sans-serif; }
     }
+    /* Hide scrollbar */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    * {
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
+    }
+    /* Avatar background effect */
+    .avatar-bg {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+    /* Gradient text for Listique title */
+    .gradient-title {
+      background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+      display: inline-block;
+    }
+    /* Lighter, more subtle transparent purple wishlist form background */
+    .wishlist-form-bg {
+      background: linear-gradient(135deg, rgba(168,85,247,0.10) 0%, rgba(99,102,241,0.06) 100%);
+      /* fallback for dark mode */
+    }
+    @media (prefers-color-scheme: dark) {
+      .wishlist-form-bg {
+        background: linear-gradient(135deg, rgba(168,85,247,0.13) 0%, rgba(99,102,241,0.08) 100%);
+      }
+    }
   </style>
+  <script>
+    // Add debug function to help troubleshoot
+    function debug(message, data) {
+      console.log(`[DEBUG] ${message}`, data || '');
+    }
+
+    async function validateSession() {
+      try {
+        debug('Validating session...');
+        const response = await fetch('../../../Backend/user/get_user.php', {
+          credentials: 'include',
+          cache: 'no-cache' // Prevent caching issues
+        });
+
+        debug('Session validation response status:', response.status);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          debug('Error response text:', errorText);
+          
+          let errorData = {};
+          try {
+            errorData = JSON.parse(errorText);
+          } catch (e) {
+            debug('Failed to parse error response as JSON');
+          }
+          
+          if (response.status === 401) {
+            alert('Session expired. Redirecting to login page...');
+            window.location.href = '../login/index.html';
+            return;
+          } 
+          
+          throw new Error(`Failed to validate session: ${errorData.error || response.statusText}`);
+        }
+
+        const responseText = await response.text();
+        debug('User data response text:', responseText);
+        
+        let user;
+        try {
+          user = JSON.parse(responseText);
+          debug('User data parsed:', user);
+        } catch (e) {
+          debug('Failed to parse user data as JSON', e);
+          throw new Error('Invalid user data format');
+        }
+        
+        if (!user || !user.id) {
+          throw new Error('Invalid user data - missing ID');
+        }
+
+        // Set user name and avatar
+        document.getElementById('userName').textContent = user.name;
+        document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
+        document.getElementById('userAvatarToggle').textContent = user.name.charAt(0).toUpperCase();
+        document.getElementById('welcomeUserName').textContent = user.name;
+
+        // Store user ID for wishlist operations
+        window.loggedInUserId = user.id;
+        debug('User ID stored:', window.loggedInUserId);
+
+        // Load wishlists after fetching user details
+        loadWishlists();
+      } catch (error) {
+        console.error('Error validating session:', error);
+        alert('Session error: ' + error.message);
+        // Don't automatically redirect to avoid infinite loops
+      }
+    }
+
+    async function loadWishlists() {
+      if (!window.loggedInUserId) {
+        debug('No user ID available for loading wishlists');
+        return;
+      }
+      
+      try {
+        debug('Loading wishlists for user ID:', window.loggedInUserId);
+        const response = await fetch(`../../../Backend/wishlist/get.php?user_id=${window.loggedInUserId}`, {
+          credentials: 'include',
+          cache: 'no-cache' // Prevent caching issues
+        });
+        
+        debug('Wishlist response status:', response.status);
+        
+        const responseText = await response.text();
+        debug('Wishlist response text:', responseText);
+        
+        if (!response.ok) {
+          let errorData = {};
+          try {
+            errorData = JSON.parse(responseText);
+          } catch (e) {
+            debug('Failed to parse error response as JSON');
+          }
+          throw new Error(`Failed to fetch wishlists: ${errorData.error || response.statusText}`);
+        }
+        
+        let wishlists;
+        try {
+          wishlists = JSON.parse(responseText);
+          debug('Wishlists loaded:', wishlists);
+        } catch (e) {
+          debug('Failed to parse wishlists data as JSON', e);
+          throw new Error('Invalid wishlist data format');
+        }
+
+        const container = document.getElementById('wishlistsContainer');
+        container.innerHTML = '';
+        
+        if (wishlists.length === 0) {
+          container.innerHTML = '<p class="col-span-full text-center text-gray-500">No wishlists found. Create your first wishlist above!</p>';
+          return;
+        }
+        
+        wishlists.forEach((wishlist) => {
+          const div = document.createElement('div');
+          div.className = 'bg-gradient-to-br from-white/80 via-indigo-50 to-purple-50 dark:from-slate-900/80 dark:via-slate-800/80 dark:to-indigo-900/80 p-6 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 hover:shadow-2xl transition-shadow duration-300';
+          // Parse items as array, fallback to description if not available
+          let itemsHtml = '';
+          if (wishlist.items && Array.isArray(wishlist.items)) {
+            itemsHtml = `<ul class="list-disc list-inside text-slate-700 dark:text-slate-200 mt-2 space-y-1">${wishlist.items.map(item => `<li>${item}</li>`).join('')}</ul>`;
+          } else if (wishlist.description) {
+            itemsHtml = `<p class="text-sm text-slate-500 mt-2">${wishlist.description}</p>`;
+          }
+          div.innerHTML = `
+            <h3 class="text-lg font-bold text-indigo-800 dark:text-indigo-200 mb-1">${wishlist.title}</h3>
+            ${itemsHtml}
+            <div class="mt-4 flex justify-between items-center">
+              <div class="flex gap-2">
+                <button onclick="shareWishlist(${wishlist.id})" class="px-3 py-1 bg-indigo-500 hover:bg-indigo-600 rounded-lg text-sm text-white shadow transition">Share</button>
+                <button onclick="deleteWishlist(${wishlist.id})" class="px-3 py-1 bg-red-500 hover:bg-red-600 rounded-lg text-sm text-white shadow transition">Delete</button>
+              </div>
+              <span class="text-xs text-slate-500">${new Date(wishlist.created_at).toLocaleDateString()}</span>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      } catch (error) {
+        console.error('Error loading wishlists:', error);
+        const container = document.getElementById('wishlistsContainer');
+        container.innerHTML = `<p class="col-span-full text-center text-red-500">Error: ${error.message}</p>`;
+      }
+    }
+
+    async function shareWishlist(id) {
+      try {
+        debug('Sharing wishlist ID:', id);
+        const response = await fetch('../../../Backend/wishlist/share.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          credentials: 'include',
+          body: new URLSearchParams({ id })
+        });
+
+        debug('Share response status:', response.status);
+        const responseText = await response.text();
+        debug('Share response text:', responseText);
+
+        if (!response.ok) {
+          let errorData = {};
+          try {
+            errorData = JSON.parse(responseText);
+          } catch (e) {
+            debug('Failed to parse error response as JSON');
+          }
+          throw new Error(`Failed to share wishlist: ${errorData.error || response.statusText}`);
+        }
+
+        let result;
+        try {
+          result = JSON.parse(responseText);
+          debug('Share result:', result);
+        } catch (e) {
+          debug('Failed to parse share result as JSON', e);
+          throw new Error('Invalid share result format');
+        }
+        
+        if (result.success) {
+          const shareableLink = result.link;
+          alert(`Wishlist shared successfully! Shareable link: ${shareableLink}`);
+          window.open(shareableLink, '_blank');
+        }
+      } catch (error) {
+        console.error('Error sharing wishlist:', error);
+        alert('Unable to share wishlist: ' + error.message);
+      }
+    }
+
+    async function deleteWishlist(id) {
+      if (!confirm('Are you sure you want to delete this wishlist?')) return;
+      try {
+        debug('Deleting wishlist ID:', id);
+        const response = await fetch('../../../Backend/wishlist/delete.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          credentials: 'include',
+          body: new URLSearchParams({ id })
+        });
+
+        debug('Delete response status:', response.status);
+        const responseText = await response.text();
+        debug('Delete response text:', responseText);
+
+        if (!response.ok) {
+          let errorData = {};
+          try {
+            errorData = JSON.parse(responseText);
+          } catch (e) {
+            debug('Failed to parse error response as JSON');
+          }
+          throw new Error(`Failed to delete wishlist: ${errorData.error || response.statusText}`);
+        }
+
+        let result;
+        try {
+          result = JSON.parse(responseText);
+          debug('Delete result:', result);
+        } catch (e) {
+          debug('Failed to parse delete result as JSON', e);
+          throw new Error('Invalid delete result format');
+        }
+
+        if (result.success) {
+          alert('Wishlist deleted successfully!');
+          loadWishlists();
+        }
+      } catch (error) {
+        console.error('Error deleting wishlist:', error);
+        alert('Unable to delete wishlist: ' + error.message);
+      }
+    }
+
+    // Ensure form is available before attaching event
+    document.addEventListener('DOMContentLoaded', () => {
+      const wishlistForm = document.getElementById('wishlistForm');
+      if (wishlistForm) {
+        wishlistForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+
+          const title = document.getElementById('wishlistTitle').value;
+          const itemInputs = Array.from(document.querySelectorAll('.wishlist-item-input'));
+          const items = itemInputs.map(input => input.value.trim()).filter(Boolean);
+
+          if (!title || items.length === 0) {
+            alert('Please enter a title and at least one item.');
+            return;
+          }
+
+          debug('Creating wishlist:', { title, items });
+
+          try {
+            const response = await fetch('../../../Backend/wishlist/create.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({
+                title,
+                items
+              })
+            });
+
+            debug('Create wishlist response status:', response.status);
+            const responseText = await response.text();
+            debug('Create wishlist response text:', responseText);
+
+            if (!response.ok) {
+              let errorData = {};
+              try {
+                errorData = JSON.parse(responseText);
+              } catch (e) {
+                debug('Failed to parse error response as JSON');
+              }
+              throw new Error(`Failed to create wishlist: ${errorData.error || response.statusText}`);
+            }
+
+            let result;
+            try {
+              result = JSON.parse(responseText);
+              debug('Create wishlist result:', result);
+            } catch (e) {
+              debug('Failed to parse create result as JSON', e);
+              // If we can't parse the result but the status was OK, assume success
+              if (response.ok) {
+                result = { success: true };
+              } else {
+                throw new Error('Invalid create result format');
+              }
+            }
+
+            if (result.success) {
+              debug('Wishlist created successfully');
+              alert('Wishlist created successfully!');
+              wishlistForm.reset();
+              // Remove all but one item input
+              Array.from(document.querySelectorAll('.wishlist-item-input')).forEach((input, idx) => {
+                if (idx > 0) input.parentElement.remove();
+              });
+              loadWishlists();
+            }
+          } catch (error) {
+            console.error('Error creating wishlist:', error);
+            alert('Unable to create wishlist: ' + error.message);
+          }
+        });
+      } else {
+        debug('Wishlist form not found in DOM');
+      }
+    });
+
+    async function logout() {
+      try {
+        debug('Logging out...');
+        const response = await fetch('../../../Backend/logout.php', {
+          method: 'POST',
+          credentials: 'include',
+        });
+
+        debug('Logout response status:', response.status);
+        const responseText = await response.text();
+        debug('Logout response text:', responseText);
+
+        if (!response.ok) throw new Error('Failed to log out');
+
+        let result;
+        try {
+          result = JSON.parse(responseText);
+          debug('Logout result:', result);
+        } catch (e) {
+          debug('Failed to parse logout result as JSON', e);
+          // If we can't parse the result but the status was OK, assume success
+          if (response.ok) {
+            result = { success: true, message: 'Logged out successfully' };
+          } else {
+            throw new Error('Invalid logout result format');
+          }
+        }
+
+        if (result.success) {
+          alert(result.message || 'Logged out successfully');
+          window.location.href = '../login/index.html';
+        } else {
+          throw new Error(result.message || 'Logout failed');
+        }
+      } catch (error) {
+        console.error('Error during logout:', error);
+        alert('Unable to log out: ' + error.message);
+      }
+    }
+
+    // Validate session and fetch user details on page load
+    validateSession();
+
+    // Wishlist item dynamic add/remove logic
+    document.addEventListener('DOMContentLoaded', () => {
+      const itemsContainer = document.getElementById('wishlistItemsContainer');
+      const addBtn = document.getElementById('addWishlistItemBtn');
+    
+      function addItemInput(value = '') {
+        const div = document.createElement('div');
+        div.className = 'flex items-center mb-2 gap-2';
+        div.innerHTML = `
+          <input type="text" class="wishlist-item-input flex-1 p-3 rounded-xl bg-slate-800/80 text-slate-100 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 transition placeholder:text-slate-400" placeholder="Enter item" required value="${value.replace(/"/g, '&quot;')}" />
+          <button type="button" class="remove-item-btn px-3 py-2 bg-red-600 hover:bg-red-700 rounded-xl text-white font-bold text-lg shadow transition">−</button>
+        `;
+        div.querySelector('.remove-item-btn').onclick = () => {
+          if (itemsContainer.querySelectorAll('.wishlist-item-input').length > 1) {
+            div.remove();
+          }
+        };
+        itemsContainer.appendChild(div);
+      }
+    
+      // Add initial item input if only one exists
+      if (itemsContainer.querySelectorAll('.wishlist-item-input').length === 0) {
+        addItemInput();
+      }
+    
+      addBtn.onclick = () => addItemInput();
+    
+      // Prevent form submit on add item
+      itemsContainer.addEventListener('click', e => {
+        if (e.target.classList.contains('add-item-btn')) {
+          addItemInput();
+        }
+      });
+    
+      const wishlistForm = document.getElementById('wishlistForm');
+      if (wishlistForm) {
+        wishlistForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+    
+          const title = document.getElementById('wishlistTitle').value;
+          const itemInputs = Array.from(document.querySelectorAll('.wishlist-item-input'));
+          const items = itemInputs.map(input => input.value.trim()).filter(Boolean);
+    
+          if (!title || items.length === 0) {
+            alert('Please enter a title and at least one item.');
+            return;
+          }
+    
+          debug('Creating wishlist:', { title, items });
+    
+          try {
+            const response = await fetch('../../../Backend/wishlist/create.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({
+                title,
+                items
+              })
+            });
+    
+            debug('Create wishlist response status:', response.status);
+            const responseText = await response.text();
+            debug('Create wishlist response text:', responseText);
+    
+            if (!response.ok) {
+              let errorData = {};
+              try {
+                errorData = JSON.parse(responseText);
+              } catch (e) {
+                debug('Failed to parse error response as JSON');
+              }
+              throw new Error(`Failed to create wishlist: ${errorData.error || response.statusText}`);
+            }
+    
+            let result;
+            try {
+              result = JSON.parse(responseText);
+              debug('Create wishlist result:', result);
+            } catch (e) {
+              debug('Failed to parse create result as JSON', e);
+              if (response.ok) {
+                result = { success: true };
+              } else {
+                throw new Error('Invalid create result format');
+              }
+            }
+    
+            if (result.success) {
+              debug('Wishlist created successfully');
+              alert('Wishlist created successfully!');
+              wishlistForm.reset();
+              // Remove all but one item input
+              Array.from(document.querySelectorAll('.wishlist-item-input')).forEach((input, idx) => {
+                if (idx > 0) input.parentElement.remove();
+              });
+              loadWishlists();
+            }
+          } catch (error) {
+            console.error('Error creating wishlist:', error);
+            alert('Unable to create wishlist: ' + error.message);
+          }
+        });
+      } else {
+        debug('Wishlist form not found in DOM');
+      }
+    });
+  </script>
 </head>
 <body class="h-full overflow-x-hidden antialiased bg-black text-slate-300">
   <div x-data="{ open: false }" class="h-full flex">
-    <button @click="open = !open" class="md:hidden fixed top-4 left-4 z-50 p-2 bg-white/10 rounded-lg focus:outline-none">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
-    </button>
-
     <!-- Sidebar -->
-    <aside :class="open ? 'translate-x-0' : '-translate-x-full'" 
-           class="fixed inset-y-0 left-0 w-64 bg-white/10 border-r border-white/20 p-6 space-y-6 transform transition-transform duration-300 md:relative md:translate-x-0 md:flex-shrink-0 h-full overflow-y-auto">
-      <h1 class="text-4xl font-extrabold bg-gradient-to-br from-white via-white/50 to-transparent bg-clip-text text-transparent">
-        Listique<span class="text-indigo-400">.</span>
-      </h1>
-      <p class="text-lg text-slate-400">Welcome back,</p>
-      <!-- Profile -->
-      <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-2xl">
-        <div class="w-12 h-12 rounded-full bg-black flex items-center justify-center">
-          <span id="userAvatar" class="text-2xl font-bold text-purple-500"></span>
+    <aside :class="open ? 'translate-x-0' : 'translate-x-full'" 
+           class="fixed inset-y-0 right-0 w-64 bg-black border-none p-6 space-y-6 transform transition-transform duration-300 h-full overflow-y-auto">
+      <div class="flex justify-between items-center">
+        <!-- Profile -->
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 rounded-full avatar-bg flex items-center justify-center">
+            <span id="userAvatar" class="text-2xl font-bold text-purple-500"></span>
+          </div>
+          <div>
+            <p id="userName" class="text-lg font-semibold"></p>
+            <p class="text-sm text-slate-400">Digital Creator</p>
+          </div>
         </div>
-        <div>
-          <p id="userName" class="text-lg font-semibold"></p>
-          <p class="text-sm text-slate-400">Digital Creator</p>
-        </div>
+        <!-- Close Button -->
+        <button x-show="open" @click="open = false" class="text-white cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
       <!-- Nav -->
       <nav class="space-y-2">
-        <a href="#" class="flex items-center space-x-3 p-3 rounded-2xl hover:bg-white/10 transition">
+        <a href="index.html" class="flex items-center space-x-3 p-3 rounded-2xl hover:bg-white/10 transition">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13.5h18M3 6h18M3 20h18" />
           </svg>
           <span class="text-lg font-semibold">Dashboard</span>
         </a>
-        <a href="#" class="flex items-center space-x-3 p-3 rounded-2xl hover:bg-white/10 transition">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-slate-300 hover:text-indigo-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M3 11h18M5 11v10a2 2 0 002 2h10a2 2 0 002-2V11" />
+        <a href="../profile/index.html" class="flex items-center space-x-3 p-3 rounded-2xl hover:bg-white/10 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A1 1 0 016 17h12a1 1 0 01.879.516l3 5A1 1 0 0121 24H3a1 1 0 01-.879-1.484l3-5zM12 2a5 5 0 015 5v1a1 1 0 01-1 1H8a1 1 0 01-1-1V7a5 5 0 015-5z" />
           </svg>
-          <span class="text-lg font-semibold">My Wishlists</span>
+          <span class="text-lg font-semibold">My Profile</span>
         </a>
-        <a href="#" class="flex items-center space-x-3 p-3 rounded-2xl hover:bg-white/10 transition">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-slate-300 hover:text-indigo-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 8a3 3 0 11-6 0 3 3 0 016 0zM4 19a8 8 0 0116 0" />
+        <a href="#" onclick="logout()" class="flex items-center space-x-3 p-3 rounded-2xl hover:bg-white/10 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-6 0v-1m6-10V5a3 3 0 00-6 0v1" />
           </svg>
-          <span class="text-lg font-semibold">Shared Lists</span>
-        </a>
-        <a href="#" class="flex items-center space-x-3 p-3 rounded-2xl hover:bg-white/10 transition">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-slate-300 hover:text-indigo-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.25 3.75a.75.75 0 011.5 0v1.5a.75.75 0 01-1.5 0V3.75zM4.5 11.25a.75.75 0 010-1.5h1.5a.75.75 0 010 1.5H4.5zm12 0a.75.75 0 010-1.5h1.5a.75.75 0 010 1.5h-1.5zM11.25 18.75a.75.75 0 011.5 0v1.5a.75.75 0 01-1.5 0v-1.5z" />
-          </svg>
-          <span class="text-lg font-semibold">Settings</span>
+          <span class="text-lg font-semibold text-red-500">Logout</span>
         </a>
       </nav>
-      <p class="text-xs text-center text-gray-500">v1.0.0 | &copy; 2053 Listique</p>
+      <p class="text-xs text-center text-gray-500">v1.0.0 | &copy; 2025 Listique</p>
     </aside>
 
-    <!-- Mobile overlay -->
-    <div x-show="open" @click="open = false" class="fixed inset-0 bg-black/50 md:hidden"></div>
+    <!-- Avatar -->
+    <div class="fixed top-4 right-4 z-50">
+      <div x-show="!open" @click="open = true" class="w-12 h-12 rounded-full avatar-bg flex items-center justify-center cursor-pointer">
+        <span id="userAvatarToggle" class="text-2xl font-bold text-purple-500"></span>
+      </div>
+    </div>
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col h-full overflow-y-auto">
       <div class="p-6">
+        <!-- Title and Welcome -->
+        <div class="mb-6">
+          <h1 class="text-4xl font-extrabold gradient-title">Listique<span class="text-indigo-400">.</span></h1>
+          <p class="text-lg text-slate-400 mt-2">Welcome back, <span id="welcomeUserName" class="text-white font-semibold"></span></p>
+        </div>
         <!-- Add Wishlist Form -->
-        <div class="bg-white/10 p-6 rounded-2xl mb-10">
-          <h2 class="text-2xl font-semibold mb-4">Create Wishlist</h2>
-          <form id="wishlistForm" class="space-y-4">
+        <div class="w-full wishlist-form-bg p-8 rounded-2xl mb-10 shadow-xl transition-all duration-300">
+          <h2 class="text-2xl font-bold mb-6 text-slate-100 flex items-center gap-2">
+            <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Create Wishlist
+          </h2>
+          <form id="wishlistForm" class="space-y-5">
             <div>
-              <label for="wishlistTitle" class="block text-sm font-medium">Title</label>
-              <input type="text" id="wishlistTitle" class="w-full p-2 rounded-lg bg-white/5 text-white" required />
+              <label for="wishlistTitle" class="block text-base font-medium mb-1 text-slate-300">Title</label>
+              <input type="text" id="wishlistTitle" class="w-full p-3 rounded-xl bg-slate-800/80 text-slate-100 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 transition placeholder:text-slate-400" required placeholder="e.g. Birthday Gifts" />
             </div>
-            <div>
-              <label for="wishlistDescription" class="block text-sm font-medium">Description</label>
-              <textarea id="wishlistDescription" class="w-full p-2 rounded-lg bg-white/5 text-white" rows="3" required></textarea>
+            <div id="wishlistItemsContainer">
+              <label class="block text-base font-medium mb-2 text-slate-300">Items</label>
+              <div class="flex items-center mb-2 gap-2">
+                <input type="text" class="wishlist-item-input flex-1 p-3 rounded-xl bg-slate-800/80 text-slate-100 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 transition placeholder:text-slate-400" placeholder="Enter item" required />
+                <button type="button" class="add-item-btn px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-slate-100 font-bold text-lg shadow transition">+</button>
+              </div>
             </div>
-            <button type="submit" class="px-4 py-2 bg-indigo-600 rounded-lg text-white">Create</button>
+            <button type="button" id="addWishlistItemBtn" class="w-full py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-200 font-semibold shadow transition mb-2 flex items-center justify-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+              Add Another Item
+            </button>
+            <button type="submit" class="w-full py-3 bg-slate-700 hover:bg-slate-600 rounded-2xl text-slate-100 font-bold text-lg shadow-lg transition flex items-center justify-center gap-2">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              Create
+            </button>
           </form>
         </div>
 
@@ -104,114 +612,5 @@
 
   <!-- Alpine.js for sidebar toggle -->
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>
-    async function fetchUserDetails() {
-      try {
-        const response = await fetch('../../../Backend/user/get.php'); // Ensure the endpoint is correct
-        if (!response.ok) {
-          if (response.status === 401) {
-            alert('You are not logged in. Redirecting to login page...');
-            window.location.href = '../login/index.html';
-          } else {
-            throw new Error(`Error ${response.status}: ${response.statusText}`);
-          }
-        }
-        const user = await response.json();
-
-        // Set user name and avatar
-        document.getElementById('userName').textContent = user.name;
-        document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
-
-        // Store user ID for wishlist operations
-        window.loggedInUserId = user.id;
-
-        // Load wishlists after fetching user details
-        loadWishlists();
-      } catch (error) {
-        console.error('Error fetching user details:', error);
-        alert('Unable to load user details. Please log in again.');
-      }
-    }
-
-    async function loadWishlists() {
-      try {
-        const response = await fetch(`../../../Backend/wishlist/get.php?user_id=${window.loggedInUserId}`);
-        if (!response.ok) throw new Error('Failed to fetch wishlists');
-        const wishlists = await response.json();
-
-        const container = document.getElementById('wishlistsContainer');
-        container.innerHTML = '';
-        wishlists.forEach((wishlist) => {
-          const div = document.createElement('div');
-          div.className = 'bg-white/10 p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300';
-          div.innerHTML = `
-            <h3 class="text-lg font-semibold text-white">${wishlist.title}</h3>
-            <p class="text-sm text-slate-400 mt-2">${wishlist.description}</p>
-            <div class="mt-4 flex justify-between items-center">
-              <button onclick="shareWishlist(${wishlist.id})" class="px-3 py-1 bg-indigo-600 rounded-lg text-sm text-white">Share</button>
-              <span class="text-xs text-slate-500">Created on ${new Date(wishlist.created_at).toLocaleDateString()}</span>
-            </div>
-          `;
-          container.appendChild(div);
-        });
-      } catch (error) {
-        console.error(error);
-        alert('Unable to load wishlists.');
-      }
-    }
-
-    async function shareWishlist(id) {
-      try {
-        const response = await fetch('../../../Backend/wishlist/share.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ id }) // Send ID as POST parameter
-        });
-
-        if (!response.ok) throw new Error('Failed to share wishlist');
-
-        const result = await response.json();
-        if (result.success) {
-            const shareableLink = result.link;
-            alert(`Wishlist shared successfully! Shareable link: ${shareableLink}`);
-            window.open(shareableLink, '_blank'); // Open the link in a new tab
-        }
-      } catch (error) {
-        console.error('Error sharing wishlist:', error);
-        alert('Unable to share wishlist.');
-      }
-    }
-
-    document.getElementById('wishlistForm').addEventListener('submit', async (event) => {
-        event.preventDefault(); // Prevent default form submission
-
-        const title = document.getElementById('wishlistTitle').value;
-        const description = document.getElementById('wishlistDescription').value;
-
-        try {
-            const response = await fetch('../../../Backend/wishlist/create.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: window.loggedInUserId, // Ensure user_id is included
-                    title,
-                    description
-                })
-            });
-
-            if (!response.ok) throw new Error('Failed to create wishlist');
-
-            alert('Wishlist created successfully!');
-            document.getElementById('wishlistForm').reset(); // Clear the form
-            loadWishlists(); // Reload wishlists
-        } catch (error) {
-            console.error('Error creating wishlist:', error);
-            alert('Unable to create wishlist.');
-        }
-    });
-
-    // Fetch user details on page load
-    fetchUserDetails();
-  </script>
 </body>
 </html>

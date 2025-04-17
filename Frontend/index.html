@@ -32,15 +32,20 @@
         background-color: #000;
         z-index: 9999;
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
-        font-family: monospace;
-        color: #a855f7;
-        font-size: 2rem;
+        width: 100vw;
+        height: 100vh;
+      }
+      #loader img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
       }
       #loader.hide {
-        display: none;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.8s ease, visibility 0.8s ease;
       }
       .bg-video {
         position: absolute;
@@ -54,21 +59,57 @@
       #custom-cursor {
         position: fixed;
         pointer-events: none;
-        width: 30px;
-        height: 30px;
-        background: transparent;
-        border: 1px solid #a855f7;
+        width: 50px;
+        height: 50px;
+        background: rgba(168, 85, 247, 0.05);
+        backdrop-filter: blur(4px);
+        border: 1.5px solid rgba(168, 85, 247, 0.6);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: sans-serif;
-        font-size: 0.6rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
         color: #a855f7;
         transform: translate(-50%, -50%) scale(1);
         z-index: 10000;
-        transition: transform 0.15s ease, opacity 0.15s ease;
-        box-shadow: 0 0 8px rgba(168, 85, 247, 0.5);
+        transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.2s ease;
+        box-shadow: 0 0 15px rgba(168, 85, 247, 0.4), 
+                    inset 0 0 10px rgba(168, 85, 247, 0.2);
+      }
+      
+      #cursor-dot {
+        position: fixed;
+        pointer-events: none;
+        width: 8px;
+        height: 8px;
+        background: #a855f7;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10001;
+        transition: width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
+      }
+      
+      #cursor-ring {
+        position: fixed;
+        pointer-events: none;
+        width: 24px;
+        height: 24px;
+        border: 1.5px solid rgba(168, 85, 247, 0.8);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10001;
+        opacity: 0.6;
+        transition: all 0.15s ease;
+      }
+      
+      a:hover ~ #custom-cursor,
+      button:hover ~ #custom-cursor {
+        transform: translate(-50%, -50%) scale(1.2);
+        background: rgba(168, 85, 247, 0.1);
+        border-color: rgba(168, 85, 247, 0.8);
       }
       body,
       a,
@@ -78,12 +119,29 @@
       #home {
         margin-top: 0;
       }
+      html,
+      body {
+        -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+        scrollbar-width: none; /* Hide scrollbar for Firefox */
+      }
+      html::-webkit-scrollbar,
+      body::-webkit-scrollbar {
+        display: none; /* Hide scrollbar for Chrome, Safari, and Edge */
+      }
+      body.loading {
+        overflow: hidden; /* Prevent scrolling while loading */
+      }
+      body.loading > *:not(#loader) {
+        display: none; /* Hide all content except the loader */
+      }
     </style>
   </head>
-  <body class="bg-darkbg text-darktext overflow-x-hidden relative">
+  <body class="bg-darkbg text-darktext overflow-x-hidden relative loading">
     <div id="loader">
-      <div id="loader-text">STARTING UP 0%</div>
+      <img src="https://cdn.svgator.com/images/2023/06/ping-pong-css-loader.svg" alt="Loading..." />
     </div>
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
     <div id="custom-cursor">SCROLL</div>
     <header
       class="fixed top-0 left-0 w-full z-50 bg-black bg-opacity-90 shadow-md"
@@ -93,17 +151,13 @@
       >
         <div class="text-2xl font-bold text-primary">Listique</div>
         <nav class="space-x-6">
-          <a href="#home" class="hover:text-primary transition">Home</a>
-          <a href="./pages/aboutUs/index.html" class="hover:text-primary transition">About</a>
-          <a href="./pages/contactUs/index.html" class="hover:text-primary transition">Contact Us</a>
-          <a href="./pages/Faq/index.html" class="hover:text-primary transition">FAQ</a>
-          <a href="./pages/TnC/index.html" class="hover:text-primary transition"
-            >Terms And Condition</a
-          >
-          <a href="./pages/login/index.html" class="hover:text-primary transition"
-            >Login</a
-          >
-          <a href="./pages/signup/index.html" class="hover:text-primary transition">Signup</a>
+          <!-- <a href="#home" class="hover:text-primary transition" target="_blank" rel="noopener noreferrer">Home</a> -->
+          <a href="./pages/aboutUs/index.html" class="hover:text-primary transition" target="_blank" rel="noopener noreferrer">About</a>
+          <a href="./pages/contactUs/index.html" class="hover:text-primary transition" target="_blank" rel="noopener noreferrer">Contact Us</a>
+          <a href="./pages/Faq/index.html" class="hover:text-primary transition" target="_blank" rel="noopener noreferrer">FAQ</a>
+          <a href="./pages/TnC/index.html" class="hover:text-primary transition" target="_blank" rel="noopener noreferrer">Terms And Condition</a>
+          <a href="./pages/login/index.html" class="hover:text-primary transition" target="_blank" rel="noopener noreferrer">Login</a>
+          <a href="./pages/signup/index.html" class="hover:text-primary transition" target="_blank" rel="noopener noreferrer">Signup</a>
         </nav>
       </div>
     </header>
@@ -429,5 +483,13 @@
       </div>
     </footer>
     <script src="script.js"></script>
+    <script>
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          document.getElementById('loader').classList.add('hide');
+          document.body.classList.remove('loading'); // Show the webpage
+        }, 1500); // 1.5 seconds delay
+      });
+    </script>
   </body>
 </html>
